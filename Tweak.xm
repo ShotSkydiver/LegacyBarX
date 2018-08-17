@@ -67,13 +67,13 @@ setDefaultVisualProviderClass:NSClassFromString(@"_UIStatusBarVisualProvider_iOS
 }
 
 - (void)setFrame:(CGRect)frame {
-    frame.origin.y = -16;
+    frame.origin.y = 16;
     frame.size.height = 88;
     %orig(frame);
 }
 - (CGRect)bounds {
     CGRect frame = %orig;
-    frame.origin.y = -16;
+    frame.origin.y = 16;
     frame.size.height = 88;
     return frame;
 }
