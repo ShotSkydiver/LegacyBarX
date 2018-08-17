@@ -24,7 +24,8 @@ BOOL __UIScreenHasDevicePeripheryInsets() {
 	return YES;
 }
 
-
+@interface UIStatusBarForegroundView : UIView
+@end
 
 @interface _UIStatusBar
 + (void)setDefaultVisualProviderClass:(Class)classOb;
@@ -66,31 +67,45 @@ setDefaultVisualProviderClass:NSClassFromString(@"_UIStatusBarVisualProvider_iOS
 	return [NSClassFromString(@"_UIStatusBarVisualProvider_iOS") intrinsicContentSizeForOrientation:orientation].height;
 }
 
-- (void)setFrame:(CGRect)frame {
-    frame.origin.y = 16;
-    frame.size.height = 88;
-    %orig(frame);
-}
-- (CGRect)bounds {
-    CGRect frame = %orig;
-    frame.origin.y = 16;
-    frame.size.height = 88;
-    return frame;
-}
-- (void)layoutSubviews {
-	%orig;
-}
 %end
 
 %hook _UIStatusBarVisualProvider_iOS
 + (Class)class {
 	return NSClassFromString(@"_UIStatusBarVisualProvider_iOS");
 }
-+ (CGSize)intrinsicContentSizeForOrientation:(NSInteger)orientation {
-	return CGSizeMake(1125,128);
-}
+//+ (CGSize)intrinsicContentSizeForOrientation:(NSInteger)orientation {
+//	return CGSizeMake(1125,128);
+//}
 %end
 
+
+%hook UIStatusBarForegroundView
+- (void)setFrame:(CGRect)frame {
+    //frame.size.width -= 25;
+    frame.origin.x = 3;
+    frame.origin.y = 16.0;
+    //frame.size.height = 64;
+    %orig(frame);
+}
+-(CGRect)frame {
+    CGRect result = %orig;
+    result.origin.y = 16.0;
+    //result.size.height = 64;
+    return result;
+}
+-(void)layoutSubviews {
+    UIStatusBar *_statusBar = (UIStatusBar *)self.superview;
+    //[_statusBar isDoubleHeight:YES];
+    //[_statusBar forceUpdateDoubleHeightStatus];
+    CGRect statusBarFrame = _statusBar.frame;
+    //statusBarFrame.size.width -= 25;
+    statusBarFrame.origin.x = 3;
+    statusBarFrame.origin.y = 16.0;
+    //statusBarFrame.size.height = 64;
+    _statusBar.frame = statusBarFrame;
+    %orig();
+}
+%end
 
 
 //%hook UIStatusBarWindow
@@ -98,15 +113,6 @@ setDefaultVisualProviderClass:NSClassFromString(@"_UIStatusBarVisualProvider_iOS
 //	CGRect frame = %orig;
 //	frame.size.height += 48;
 //	return frame;
-//}
-//-(void)layoutSubviews {
-//	CGRect wholeFrame = [UIScreen mainScreen].bounds; //whole screen
-//    	CGRect sbFrame = wholeFrame;
-//    	sbFrame.size.height = 48;
-//
-//	UIStatusBar_Base *statusBar = [self valueForKey:@"_statusBar"];
-//	CGFloat statusHeight = [statusBar frame].size.height;
-//	%orig;
 //}
 //%end
 
@@ -132,13 +138,15 @@ setDefaultVisualProviderClass:NSClassFromString(@"_UIStatusBarVisualProvider_iOS
 + (Class)_statusBarImplementationClass {
 	return NSClassFromString(@"UIStatusBar");
 }
-
+//- (BOOL)isDoubleHeight {
+//    return YES;
+//}
 %end
 
 
 static void Loader(){
 		MSHookFunction(((void*)MSFindSymbol(NULL, "_IS_D2x")),(void*)_IS_D2x, (void**)&old__IS_D2x);
-		MSHookFunction(((void*)MSFindSymbol(NULL, "__UIScreenHasDevicePeripheryInsets")),(void*)__UIScreenHasDevicePeripheryInsets, (void**)&old___UIScreenHasDevicePeripheryInsets);
+        MSHookFunction(((void*)MSFindSymbol(NULL, "__UIScreenHasDevicePeripheryInsets")),(void*)__UIScreenHasDevicePeripheryInsets, (void**)&old___UIScreenHasDevicePeripheryInsets);
 }
 
 %hook UIScreen
@@ -151,6 +159,7 @@ static void Loader(){
 - (UIEdgeInsets)_sceneSafeAreaInsets {
 	UIEdgeInsets orig = %orig;
 	if (orig.bottom == 34) orig.bottom = 20;
+	orig.top = 72;
 	return orig;
 }
 %end
@@ -523,7 +532,7 @@ static void Loader(){
 	if ([mainIdentifier isEqualToString:@"com.apple.springboard"]) {
 		// do springboard thing I guess
 	}
-	else if ([mainIdentifier isEqualToString:@"com.apple.mobilephone"]) {
+	else if ([mainIdentifier isEqualToString:@"com.apple.MobilePhone"]) {
 		%init(ExtraStuff)
 	}
 	else {
