@@ -63,13 +63,31 @@ setDefaultVisualProviderClass:NSClassFromString(@"_UIStatusBarVisualProvider_iOS
 }
 
 + (CGFloat)heightForOrientation:(NSInteger)orientation {
-	return [NSClassFromString(@"_UIStatusBarVisualProvider_Split") intrinsicContentSizeForOrientation:orientation].height;
+	return [NSClassFromString(@"_UIStatusBarVisualProvider_iOS") intrinsicContentSizeForOrientation:orientation].height;
+}
+
+- (void)setFrame:(CGRect)frame {
+    frame.origin.y = -16;
+    frame.size.height = 88;
+    %orig(frame);
+}
+- (CGRect)bounds {
+    CGRect frame = %orig;
+    frame.origin.y = -16;
+    frame.size.height = 88;
+    return frame;
+}
+- (void)layoutSubviews {
+	%orig;
 }
 %end
 
 %hook _UIStatusBarVisualProvider_iOS
 + (Class)class {
 	return NSClassFromString(@"_UIStatusBarVisualProvider_iOS");
+}
++ (CGSize)intrinsicContentSizeForOrientation:(NSInteger)orientation {
+	return CGSizeMake(1125,128);
 }
 %end
 
