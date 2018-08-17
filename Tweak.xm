@@ -82,7 +82,7 @@ setDefaultVisualProviderClass:NSClassFromString(@"_UIStatusBarVisualProvider_iOS
 %hook UIStatusBarForegroundView
 - (void)setFrame:(CGRect)frame {
     //frame.size.width -= 25;
-    frame.origin.x = 3;
+    //frame.origin.x = 3;
     frame.origin.y = 16.0;
     //frame.size.height = 64;
     %orig(frame);
@@ -95,11 +95,9 @@ setDefaultVisualProviderClass:NSClassFromString(@"_UIStatusBarVisualProvider_iOS
 }
 -(void)layoutSubviews {
     UIStatusBar *_statusBar = (UIStatusBar *)self.superview;
-    //[_statusBar isDoubleHeight:YES];
-    //[_statusBar forceUpdateDoubleHeightStatus];
     CGRect statusBarFrame = _statusBar.frame;
     //statusBarFrame.size.width -= 25;
-    statusBarFrame.origin.x = 3;
+    //statusBarFrame.origin.x = 3;
     statusBarFrame.origin.y = 16.0;
     //statusBarFrame.size.height = 64;
     _statusBar.frame = statusBarFrame;
@@ -107,6 +105,19 @@ setDefaultVisualProviderClass:NSClassFromString(@"_UIStatusBarVisualProvider_iOS
 }
 %end
 
+%group AppStuff
+%hook UINavigationController
+- (void)_setUseCurrentStatusBarHeight:(BOOL)arg1 {
+	%orig(YES);
+}
+%end
+
+%hook UIApplication
+- (double)statusBarHeight {
+	return 64.0;
+}
+%end
+%end
 
 //%hook UIStatusBarWindow
 //- (CGRect)statusBarWindowFrame {
@@ -533,6 +544,7 @@ static void Loader(){
 		// do springboard thing I guess
 	}
 	else if ([mainIdentifier isEqualToString:@"com.apple.MobilePhone"]) {
+		%init(AppStuff)
 		%init(ExtraStuff)
 	}
 	else {
