@@ -1,0 +1,9 @@
+Package: com.connerowen.legacybarx
+Name: LegacyBarX
+Author: Conner Owen
+Description: Legacy statusbar on iPX
+Depends: mobilesubstrate
+Maintainer: ShotSkydiver <chdowen@gmail.com>
+Architecture: iphoneos-arm
+Section: Tweaks
+Version: 0.0.1

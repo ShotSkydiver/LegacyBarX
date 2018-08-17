@@ -1,0 +1,9 @@
+obj/
+_/
+.theos/
+.theos/last_package
+.theos/fakeroot
+.theos/last_package
+theos/
+Distribution/
+packages/
